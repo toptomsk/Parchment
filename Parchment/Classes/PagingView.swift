@@ -10,6 +10,10 @@ import UIKit
 open class PagingView: UIView {
     // MARK: Public Properties
 
+    
+    public var leftMenuAnchor: NSLayoutConstraint?
+    public var rightMenuAnchor: NSLayoutConstraint?
+    
     public let collectionView: UICollectionView
     public let pageView: UIView
     public var options: PagingOptions {
@@ -67,15 +71,28 @@ open class PagingView: UIView {
             "pageView": pageView,
         ]
 
-        let formatOptions = NSLayoutConstraint.FormatOptions()
-
-        let horizontalCollectionViewContraints = NSLayoutConstraint.constraints(
-            withVisualFormat: "H:|[collectionView]|",
-            options: formatOptions,
-            metrics: metrics,
-            views: views
-        )
-
+        #if swift(>=4.2)
+            let formatOptions = NSLayoutConstraint.FormatOptions()
+        #else
+            let formatOptions = NSLayoutFormatOptions()
+        #endif
+        
+        if #available(iOS 9.0, *) {
+            leftMenuAnchor = collectionView.leftAnchor.constraint(equalTo: leftAnchor, constant: 0)
+            leftMenuAnchor!.isActive = true
+            rightMenuAnchor = collectionView.rightAnchor.constraint(equalTo: rightAnchor, constant: 0)
+            rightMenuAnchor!.isActive = true
+        } else {
+            // Fallback on earlier versions
+            let horizontalMenuViewContraints = NSLayoutConstraint.constraints(
+                withVisualFormat: "H:|[collectionView]|",
+                options: formatOptions,
+                metrics: metrics,
+                views: views
+            )
+            addConstraints(horizontalMenuViewContraints)
+        }
+        
         let horizontalPagingContentViewContraints = NSLayoutConstraint.constraints(
             withVisualFormat: "H:|[pageView]|",
             options: formatOptions,
@@ -98,7 +115,6 @@ open class PagingView: UIView {
             views: views
         )
 
-        addConstraints(horizontalCollectionViewContraints)
         addConstraints(horizontalPagingContentViewContraints)
         addConstraints(verticalContraints)
 
@@ -109,3 +125,4 @@ open class PagingView: UIView {
         }
     }
 }
+
