@@ -237,6 +237,10 @@ extension PageViewController: UIScrollViewDelegate {
                 progress = (contentOffset - distance) / distance
             }
         }
+        
+        if scrollView.contentOffset.y != 0 {
+            scrollView.contentOffset.y = 0
+        }
 
         manager.didScroll(progress: progress)
     }
