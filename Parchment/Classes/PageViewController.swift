@@ -5,7 +5,6 @@ import UIKit
 /// is the main issue with `UIPageViewController`.
 public final class PageViewController: UIViewController {
     // MARK: Public Properties
-
     public weak var dataSource: PageViewControllerDataSource?
     public weak var delegate: PageViewControllerDelegate?
 
@@ -63,7 +62,6 @@ public final class PageViewController: UIViewController {
     }
 
     // MARK: Private Properties
-
     private let manager = PageViewManager()
 
     /// The size of a single page.
@@ -146,6 +144,12 @@ public final class PageViewController: UIViewController {
         }
     }
 
+    public override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        scrollView.frame = view.bounds
+        manager.viewWillLayoutSubviews()
+    }
+
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         manager.viewWillAppear(animated)
@@ -174,7 +178,6 @@ public final class PageViewController: UIViewController {
     }
 
     // MARK: Public Methods
-
     public func selectViewController(_ viewController: UIViewController, direction: PageViewDirection, animated: Bool = true) {
         manager.select(viewController: viewController, direction: direction, animated: animated)
     }
@@ -192,7 +195,6 @@ public final class PageViewController: UIViewController {
     }
 
     // MARK: Private Methods
-
     private func setContentOffset(_ value: CGFloat, animated: Bool) {
         scrollView.setContentOffset(point(value), animated: animated)
     }
@@ -208,7 +210,6 @@ public final class PageViewController: UIViewController {
 }
 
 // MARK: - UIScrollViewDelegate
-
 extension PageViewController: UIScrollViewDelegate {
     public func scrollViewWillBeginDragging(_: UIScrollView) {
         manager.willBeginDragging()
@@ -237,17 +238,12 @@ extension PageViewController: UIScrollViewDelegate {
                 progress = (contentOffset - distance) / distance
             }
         }
-        
-        if scrollView.contentOffset.y != 0 {
-            scrollView.contentOffset.y = 0
-        }
 
         manager.didScroll(progress: progress)
     }
 }
 
 // MARK: - PageViewManagerDataSource
-
 extension PageViewController: PageViewManagerDataSource {
     func viewControllerAfter(_ viewController: UIViewController) -> UIViewController? {
         return dataSource?.pageViewController(self, viewControllerAfterViewController: viewController)
@@ -259,7 +255,6 @@ extension PageViewController: PageViewManagerDataSource {
 }
 
 // MARK: - PageViewManagerDelegate
-
 extension PageViewController: PageViewManagerDelegate {
     func scrollForward() {
         if isRightToLeft {
@@ -299,11 +294,6 @@ extension PageViewController: PageViewManagerDelegate {
                 break
             }
         }
-    }
-
-    public override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        scrollView.frame = view.bounds
     }
 
     func layoutViews(for viewControllers: [UIViewController], keepContentOffset: Bool) {
