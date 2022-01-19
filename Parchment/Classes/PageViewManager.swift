@@ -153,6 +153,10 @@ final class PageViewManager {
             endAppearanceTransition(for: oldSelectedViewController)
         }
     }
+    
+    func viewWillLayoutSubviews() {
+        layoutsViews()
+    }
 
     func viewWillAppear(_ animated: Bool) {
         appearanceState = .appearing(animated: animated)
